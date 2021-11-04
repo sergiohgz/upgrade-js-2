@@ -16,19 +16,23 @@ botonLoadMore.addEventListener('click', () => {
     getUsuarios(listNodeLength / PER_PAGE + 1, PER_PAGE);
 });
 
+const createUsuarioInList = (usuario) => {
+    const itemNode = document.createElement('li');
+    itemNode.innerHTML = `${usuario.first_name} ${usuario.last_name}`;
+    const button = document.createElement('button');
+    const onClick = () => getUsuario(usuario.id).then((userInfo) => console.log('Información del usuario', userInfo));
+    button.addEventListener('click', onClick);
+    button.innerHTML = 'Cargar detalle';
+    itemNode.appendChild(button);
+    listNode.appendChild(itemNode);
+}
+
 
 const getUsuarios = async (page = 1, per_page= PER_PAGE) => {
     const respuestaApi = await fetch(`${baseURL}/users?page=${page}&per_page=${per_page}`);
     const respuestaJson = await respuestaApi.json();
     respuestaJson.data.forEach(usuario => {
-        const itemNode = document.createElement('li');
-        itemNode.innerHTML = `${usuario.first_name} ${usuario.last_name}`;
-        const button = document.createElement('button');
-        const onClick = () => getUsuario(usuario.id).then((userInfo) => console.log('Información del usuario', userInfo));
-        button.addEventListener('click', onClick);
-        button.innerHTML = 'Cargar detalle';
-        itemNode.appendChild(button);
-        listNode.appendChild(itemNode);
+        createUsuarioInList(usuario)
     });
     if (respuestaJson.data.length === 0) {
         rootElement.removeChild(botonLoadMore)
